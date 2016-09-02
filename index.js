@@ -29,6 +29,12 @@ exports.decorateConfig = config => {
         borderColor,
         cursorColor,
         colors,
+        termCSS: `
+        ${config.termCSS || ''}
+        ::selection {
+            background: #9198A2 !important;
+        }
+        `,
         css: `
         ${config.css || ''}
         .header_header {
