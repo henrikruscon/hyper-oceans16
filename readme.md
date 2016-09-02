@@ -15,7 +15,7 @@ Add `hyperterm-base16-ocean-saturated` to the plugins array in your `~/.hyperter
 
 ## Additional
 
-Screenshot also uses [Pure](https://github.com/sindresorhus/pure) prompt, [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) plugin for command highlights and [Fira Code](https://github.com/tonsky/FiraCode) as font.
+To look exactly like the screens, you also need [Pure](https://github.com/sindresorhus/pure) prompt, [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) command highlighting and [Fira Code](https://github.com/tonsky/FiraCode) font.
 
 
 ## License

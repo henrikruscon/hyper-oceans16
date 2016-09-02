@@ -1,3 +1,7 @@
+const throttle = require('lodash.throttle')
+const BUSY_TIMEOUT = 700
+const BUSY_THROTTLE = BUSY_TIMEOUT / 2
+
 const backgroundColor = '#303845'
 const foregroundColor = '#D0D4E6'
 const cursorColor = '#2C85F7'
@@ -22,6 +26,12 @@ const colors = {
     lightWhite  : foregroundColor
 }
 
+exports.decorateBrowserOptions = defaults => {
+    const clean = Object.assign({ frame: false }, defaults)
+    delete clean.titleBarStyle
+    return clean
+}
+
 exports.decorateConfig = config => {
     return Object.assign({}, config, {
         foregroundColor,
@@ -29,75 +39,150 @@ exports.decorateConfig = config => {
         borderColor,
         cursorColor,
         colors,
+        cursorShape: 'BEAM',
         termCSS: `
-        ${config.termCSS || ''}
-        ::selection {
-            background: #9198A2 !important;
-        }
+            ${config.termCSS || ''}
+            ::selection {
+                background: #9198A2 !important;
+            }
+            .cursor-node[focus=true]:not([moving]) {
+                animation: blink 1s ease infinite;
+            }
+            @keyframes blink {
+                50% {
+                    opacity: 0
+                }
+            }
         `,
         css: `
-        ${config.css || ''}
-        .header_header {
-            top: 0;
-            right: 0;
-            left: 0;
-        }
-        .tabs_list {
-            background-color: #292E38 !important;
-            border-bottom-color: #3E4756 !important;
-        }
-        .tab_tab {
-            color: #636A76;
-            transition: background 150ms ease;
-        }
-        .tab_tab:hover {
-            color: #FFFFFF;
-            background-color: #3E4756;
-        }
-        .tab_tab.tab_active {
-            color: #FFFFFF;
-            font-weight: 500;
-            background-color: ${backgroundColor};
-            border-color: #3E4756 !important;
-        }
-        .tab_tab.tab_active::before {
-            border-bottom-color: ${backgroundColor};
-        }
-        .tab_icon {
-            display: block;
-            top: 9px;
-            left: 9px;
-            width: 16px;
-            height: 16px;
-            border-radius: 2px;
-            background-image: url('${__dirname}/close.svg');
-            background-repeat: no-repeat;
-            background-size: 9px;
-            background-position: center;
-            transform: scale(0);
-            transition: transform 150ms ease, background 150ms ease;
-        }
-        .tab_icon:hover {
-            background-color: #292E38;
-        }
-        .tab_tab.tab_active .tab_icon:hover {
-            background-color: #505765;
-        }
-        .tab_tab:hover .tab_icon {
-            transform: scale(1);
-        }
-        .tab_tab.tab_hasActivity {
-            color: #EFAA8E !important;
-        }
-        .tab_tab.tab_hasActivity .tab_icon
-        {
-            background-image: url('${__dirname}/close_activity.svg') !important;
-        }
-        .tab_tab.tab_hasActivity .tab_icon:hover
-        {
-            background-color: #EFAA8E !important;
-            background-image: url('${__dirname}/close.svg') !important;
-        }
+            ${config.css || ''}
+            .header_header {
+                top: 0;
+                right: 0;
+                left: 0;
+            }
+            .tabs_list {
+                background-color: #292E38 !important;
+                border-bottom-color: #3E4756 !important;
+            }
+            .tab_tab {
+                color: #636A76;
+                transition: background 150ms ease;
+            }
+            .tab_tab:hover {
+                color: #FFFFFF;
+                background-color: #3E4756;
+            }
+            .tab_tab.tab_active {
+                color: #FFFFFF;
+                font-weight: 500;
+                background-color: ${backgroundColor};
+                border-color: #3E4756 !important;
+            }
+            .tab_tab.tab_active::before {
+                border-bottom-color: ${backgroundColor};
+            }
+            .tab_icon {
+                display: block;
+                top: 9px;
+                left: 9px;
+                width: 16px;
+                height: 16px;
+                border-radius: 2px;
+                background-image: url('${__dirname}/close.svg');
+                background-repeat: no-repeat;
+                background-size: 9px;
+                background-position: center;
+                transform: scale(0);
+                transition: transform 150ms ease, background 150ms ease;
+            }
+            .tab_icon:hover {
+                background-color: #292E38;
+            }
+            .tab_tab.tab_active .tab_icon:hover {
+                background-color: #505765;
+            }
+            .tab_tab:hover .tab_icon {
+                transform: scale(1);
+            }
+            .tab_tab.tab_hasActivity {
+                color: #EFAA8E !important;
+            }
+            .tab_tab.tab_hasActivity .tab_icon
+            {
+                background-image: url('${__dirname}/close_activity.svg') !important;
+            }
+            .tab_tab.tab_hasActivity .tab_icon:hover
+            {
+                background-color: #EFAA8E !important;
+                background-image: url('${__dirname}/close.svg') !important;
+            }
+            .tab_first {
+                margin-left: -1px;
+                border: 0 !important;
+            }
         `
     })
+}
+
+module.exports.decorateTerm = (Term, {React, notify}) => {
+    return class extends React.Component {
+        constructor (props, context) {
+            super(props, context)
+            this._onTerminal = this._onTerminal.bind(this)
+            this._onCursorChange = this._onCursorChange.bind(this)
+            this._updateCursorStatus = this._updateCursorStatus.bind(this)
+            this._markBusyThrottled = throttle(this._markBusy.bind(this), BUSY_THROTTLE)
+            this._markIdle = this._markIdle.bind(this)
+        }
+
+        _onTerminal (term) {
+            if (this.props.onTerminal) this.props.onTerminal(term)
+
+            this._cursor = term.cursorNode_
+
+            this._observer = new MutationObserver(this._onCursorChange)
+            this._observer.observe(this._cursor, {
+                attributes: true,
+                childList: false,
+                characterData: false
+            })
+        }
+
+        _onCursorChange (mutations) {
+            const cursorMoved = mutations.some(m => m.attributeName === 'title')
+            if (cursorMoved) {
+                this._updateCursorStatus()
+            }
+        }
+
+        _updateCursorStatus () {
+            this._markBusyThrottled()
+
+            clearTimeout(this._markingTimer)
+            this._markingTimer = setTimeout(() => {
+                this._markIdle()
+            }, BUSY_TIMEOUT)
+        }
+
+        _markBusy () {
+            this._cursor.setAttribute('moving', true)
+        }
+
+        _markIdle () {
+            this._cursor.removeAttribute('moving')
+        }
+
+        render () {
+            return React.createElement(Term, Object.assign({}, this.props, {
+                onTerminal: this._onTerminal
+            }));
+        }
+
+        componentWillUnmount () {
+            if (this._observer) {
+                this._observer.disconnect()
+            }
+        }
+    }
 }
