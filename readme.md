@@ -5,6 +5,9 @@
 ![](screen.png)
 
 
+![](screen_activity.png)
+
+
 ## Install
 
 Add `hyperterm-base16-ocean-saturated` to the plugins array in your `~/.hyperterm.js` config file and full reload.

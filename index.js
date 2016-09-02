@@ -41,21 +41,21 @@ exports.decorateConfig = config => {
             border-bottom-color: #3E4756 !important;
         }
         .tab_tab {
+            color: #636A76;
             transition: background 150ms ease;
         }
         .tab_tab:hover {
+            color: #FFFFFF;
             background-color: #3E4756;
         }
         .tab_tab.tab_active {
+            color: #FFFFFF;
             font-weight: 500;
             background-color: ${backgroundColor};
             border-color: #3E4756 !important;
         }
         .tab_tab.tab_active::before {
             border-bottom-color: ${backgroundColor};
-        }
-        .tab_tab.tab_hasActivity {
-            color: #EFAA8E;
         }
         .tab_icon {
             display: block;
@@ -79,6 +79,18 @@ exports.decorateConfig = config => {
         }
         .tab_tab:hover .tab_icon {
             transform: scale(1);
+        }
+        .tab_tab.tab_hasActivity {
+            color: #EFAA8E !important;
+        }
+        .tab_tab.tab_hasActivity .tab_icon
+        {
+            background-image: url('${__dirname}/close_activity.svg') !important;
+        }
+        .tab_tab.tab_hasActivity .tab_icon:hover
+        {
+            background-color: #EFAA8E !important;
+            background-image: url('${__dirname}/close.svg') !important;
         }
         `
     })

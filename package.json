@@ -10,7 +10,8 @@
   },
   "files": [
     "index.js",
-    "close.svg"
+    "close.svg",
+    "close_activity.svg",
   ],
   "keywords": [
     "hyperterm",
