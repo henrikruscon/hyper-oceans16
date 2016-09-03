@@ -149,7 +149,7 @@ exports.decorateConfig = config => {
                 background-image: url('${__dirname}/icons/bolt_activity.svg');
             }
             .tab-service.node {
-                padding-left: 18px;
+                padding-left: 20px;
                 background-image: url('${__dirname}/icons/node.svg');
                 background-size: 14px 14px;
             }
@@ -158,6 +158,17 @@ exports.decorateConfig = config => {
             }
             .tab_tab.tab_hasActivity .tab-service.node {
                 background-image: url('${__dirname}/icons/node_activity.svg');
+            }
+            .tab-service.php {
+                padding-left: 20px;
+                background-image: url('${__dirname}/icons/php.svg');
+                background-size: 14px 10px;
+            }
+            .tab_tab.tab_active .tab-service.php, .tab_tab:hover .tab-service.php, .tab-service.php.title {
+                background-image: url('${__dirname}/icons/php_active.svg');
+            }
+            .tab_tab.tab_hasActivity .tab-service.php {
+                background-image: url('${__dirname}/icons/php_activity.svg');
             }
         `
     })
