@@ -2,16 +2,13 @@
   "name": "hyperterm-base16-ocean-saturated",
   "version": "1.4.0",
   "description": "Saturated Base 16 Ocean Theme for HyperTerm",
+  "main": "index.js",
   "license": "MIT",
   "repository": "henrikdahl/hyperterm-base16-ocean-saturated",
   "author": {
     "name": "Henrik Dahlheim",
     "email": "henrik.dahlheim@gmail.com"
   },
-  "files": [
-    "index.js",
-    "icons/*.svg"
-  ],
   "keywords": [
     "hyperterm",
     "hyperterm-theme",
