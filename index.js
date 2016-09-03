@@ -124,7 +124,7 @@ exports.decorateConfig = config => {
             .tab-service {
                 background-repeat: no-repeat;
                 background-position: left center;
-                transition: background 150ms ease;
+                transition: background-image 150ms ease;
             }
             .tab-service.gulp {
                 padding-left: 16px;
@@ -147,6 +147,17 @@ exports.decorateConfig = config => {
             }
             .tab_tab.tab_hasActivity .tab-service.zsh {
                 background-image: url('${__dirname}/icons/bolt_activity.svg');
+            }
+            .tab-service.node {
+                padding-left: 18px;
+                background-image: url('${__dirname}/icons/node.svg');
+                background-size: 14px 14px;
+            }
+            .tab_tab.tab_active .tab-service.node, .tab_tab:hover .tab-service.node, .tab-service.node.title {
+                background-image: url('${__dirname}/icons/node_active.svg');
+            }
+            .tab_tab.tab_hasActivity .tab-service.node {
+                background-image: url('${__dirname}/icons/node_activity.svg');
             }
         `
     })
