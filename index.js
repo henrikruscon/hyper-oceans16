@@ -75,7 +75,7 @@ exports.decorateConfig = config => {
             }
             .tab_tab.tab_active {
                 color: #FFFFFF;
-                font-weight: 500;
+                font-weight: 400;
                 background-color: ${backgroundColor};
                 border-color: #3E4756 !important;
             }
@@ -89,7 +89,7 @@ exports.decorateConfig = config => {
                 width: 16px;
                 height: 16px;
                 border-radius: 2px;
-                background-image: url('${__dirname}/close.svg');
+                background-image: url('${__dirname}/icons/close.svg');
                 background-repeat: no-repeat;
                 background-size: 9px;
                 background-position: center;
@@ -110,22 +110,69 @@ exports.decorateConfig = config => {
             }
             .tab_tab.tab_hasActivity .tab_icon
             {
-                background-image: url('${__dirname}/close_activity.svg') !important;
+                background-image: url('${__dirname}/icons/close_activity.svg') !important;
             }
             .tab_tab.tab_hasActivity .tab_icon:hover
             {
                 background-color: #EFAA8E !important;
-                background-image: url('${__dirname}/close.svg') !important;
+                background-image: url('${__dirname}/icons/close.svg') !important;
             }
             .tab_first {
                 margin-left: -1px;
                 border: 0 !important;
             }
+            .tab-service {
+                background-repeat: no-repeat;
+                background-position: left center;
+                transition: background 150ms ease;
+            }
+            .tab-service.gulp {
+                padding-left: 16px;
+                background-image: url('${__dirname}/icons/gulp.svg');
+                background-size: 6px 14px;
+            }
+            .tab_tab.tab_active .tab-service.gulp, .tab_tab:hover .tab-service.gulp, .tab-service.gulp.title {
+                background-image: url('${__dirname}/icons/gulp_active.svg');
+            }
+            .tab_tab.tab_hasActivity .tab-service.gulp {
+                background-image: url('${__dirname}/icons/gulp_activity.svg');
+            }
+            .tab-service.zsh {
+                padding-left: 16px;
+                background-image: url('${__dirname}/icons/bolt.svg');
+                background-size: 8px 14px;
+            }
+            .tab_tab.tab_active .tab-service.zsh, .tab_tab:hover .tab-service.zsh, .tab-service.zsh.title {
+                background-image: url('${__dirname}/icons/bolt_active.svg');
+            }
+            .tab_tab.tab_hasActivity .tab-service.zsh {
+                background-image: url('${__dirname}/icons/bolt_activity.svg');
+            }
         `
     })
 }
 
-module.exports.decorateTerm = (Term, {React, notify}) => {
+exports.decorateTab = (Tab, { React }) => {
+    return class extends Tab {
+        render() {
+            this.props.text = React.createElement('span', { className: `tab-service ${this.props.text}` }, `${this.props.text}`)
+            return React.createElement(Tab, Object.assign({}, this.props, {}))
+        }
+    }
+}
+
+exports.decorateTabs = (Tabs, { React }) => {
+    return class extends Tabs {
+        render() {
+            if (this.props.tabs.length === 1 && typeof this.props.tabs[0].title === 'string') {
+                this.props.tabs[0].title = React.createElement('span', { className: `tab-service title ${this.props.tabs[0].title}` }, `${this.props.tabs[0].title}`)
+            }
+            return React.createElement(Tabs, Object.assign({}, this.props, {}))
+        }
+    }
+}
+
+exports.decorateTerm = (Term, {React, notify}) => {
     return class extends React.Component {
         constructor (props, context) {
             super(props, context)
