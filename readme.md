@@ -21,4 +21,4 @@ To look exactly like the screens, you also need [Pure](https://github.com/sindre
 
 ## License
 
-MIT
+MIT © Henrik Dahlheim

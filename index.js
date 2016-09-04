@@ -50,7 +50,7 @@ exports.decorateConfig = config => {
             }
             @keyframes blink {
                 50% {
-                    opacity: 0
+                    opacity: 0;
                 }
             }
         `,
@@ -106,7 +106,25 @@ exports.decorateConfig = config => {
                 transform: scale(1);
             }
             .tab_tab.tab_hasActivity {
-                color: #EFAA8E !important;
+                color: #EFAA8E;
+                animation: pulse 3s ease-in-out infinite;
+            }
+            @keyframes pulse {
+                0% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 1;
+                }
+                75% {
+                    opacity: 0.5;
+                }
+	            100% {
+                    opacity: 1;
+                }
+            }
+            .tab_tab.tab_hasActivity:hover {
+                animation: none !important;
             }
             .tab_tab.tab_hasActivity .tab_icon
             {
@@ -114,7 +132,7 @@ exports.decorateConfig = config => {
             }
             .tab_tab.tab_hasActivity .tab_icon:hover
             {
-                background-color: #EFAA8E !important;
+                background-color: #EFAA8E;
                 background-image: url('${__dirname}/icons/close.svg') !important;
             }
             .tab_first {
