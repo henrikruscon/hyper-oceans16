@@ -142,10 +142,18 @@ exports.decorateConfig = config => {
                 margin-left: -1px;
                 border: 0 !important;
             }
+            .tab_textInner {
+                padding: 0 30px;
+            }
             .tab-service {
+                max-width: 100%;
+                display: inline-block;
                 background-repeat: no-repeat;
                 background-position: left center;
                 transition: background-image 150ms ease;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
             .tab-service.gulp {
                 padding-left: 16px;
