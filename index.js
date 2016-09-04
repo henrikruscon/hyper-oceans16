@@ -56,6 +56,9 @@ exports.decorateConfig = config => {
         `,
         css: `
             ${config.css || ''}
+            .notification_indicator {
+                border-radius: 2px;
+            }
             .header_header {
                 top: 0;
                 right: 0;
