@@ -45,6 +45,9 @@ exports.decorateConfig = config => {
             ::selection {
                 background: #9198A2 !important;
             }
+            .cursor-node[focus=false] {
+                width: 3px !important;
+            }
             .cursor-node[focus=true]:not([moving]) {
                 animation: blink 1s ease infinite;
             }
@@ -274,7 +277,7 @@ exports.decorateTerm = (Term, {React, notify}) => {
         render () {
             return React.createElement(Term, Object.assign({}, this.props, {
                 onTerminal: this._onTerminal
-            }));
+            }))
         }
 
         componentWillUnmount () {
