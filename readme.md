@@ -4,7 +4,7 @@
 
 ![](screen.png)
 
-![](screen_activity.png)
+![](screen_status.png)
 
 
 ## Install
