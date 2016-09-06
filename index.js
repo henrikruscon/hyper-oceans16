@@ -254,6 +254,10 @@ exports.decorateConfig = config => {
                 padding-left: 21px;
                 background-image: url('${__dirname}/icons/folder.svg');
                 background-size: 14px 12px;
+                cursor: pointer;
+            }
+            .item_folder:hover {
+                text-decoration: underline;
             }
             .item_branch {
                 padding-left: 30px;
