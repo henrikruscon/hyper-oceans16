@@ -1,40 +1,36 @@
-const throttle = require('lodash.throttle')
-const BUSY_TIMEOUT = 700
-const BUSY_THROTTLE = BUSY_TIMEOUT / 2
+// Require
+const { shell } = require('electron');
+const { exec } = require('child_process');
+const throttle = require('lodash.throttle');
 
-const { shell } = require('electron')
-const { exec } = require('child_process')
-
-const backgroundColor = '#303845'
-const foregroundColor = '#D0D4E6'
-const cursorColor = '#2C85F7'
-const borderColor = backgroundColor
-
+// Syntax scheme
+const backgroundColor = '#303845';
+const foregroundColor = '#D0D4E6';
+const cursorColor = '#2C85F7';
+const borderColor = backgroundColor;
+const selectionColor = '#9198A2';
+const activityColor = '#EFAA8E';
+const fontSize = 12;
 const colors = {
-    black       : backgroundColor,
-    red         : '#E39194',
-    green       : '#8FCA9A',
-    yellow      : '#F7EFAE',
-    blue        : '#77ABE7',
-    magenta     : '#CAA6EC',
-    cyan        : '#A2C6EF',
-    white       : '#EFF1F5',
-    lightBlack  : '#515A6F',
-    lightRed    : '#E39194',
-    lightGreen  : '#8FCA9A',
-    lightYellow : '#F7EFAE',
-    lightBlue   : '#77ABE7',
-    lightMagenta: '#CAA6EC',
-    lightCyan   : '#A2C6EF',
-    lightWhite  : foregroundColor
-}
+    black           : backgroundColor,
+    red             : '#E39194',
+    green           : '#8FCA9A',
+    yellow          : '#F7EFAE',
+    blue            : '#77ABE7',
+    magenta         : '#CAA6EC',
+    cyan            : '#A2C6EF',
+    white           : '#EFF1F5',
+    lightBlack      : '#515A6F',
+    lightRed        : '#E39194',
+    lightGreen      : '#8FCA9A',
+    lightYellow     : '#F7EFAE',
+    lightBlue       : '#77ABE7',
+    lightMagenta    : '#CAA6EC',
+    lightCyan       : '#A2C6EF',
+    lightWhite      : foregroundColor
+};
 
-exports.decorateBrowserOptions = defaults => {
-    const clean = Object.assign({ frame: false }, defaults)
-    delete clean.titleBarStyle
-    return clean
-}
-
+// Config
 exports.decorateConfig = config => {
     return Object.assign({}, config, {
         foregroundColor,
@@ -42,11 +38,12 @@ exports.decorateConfig = config => {
         borderColor,
         cursorColor,
         colors,
+        fontSize,
         cursorShape: 'BEAM',
         termCSS: `
             ${config.termCSS || ''}
             ::selection {
-                background: #9198A2 !important;
+                background: ${selectionColor} !important;
             }
             .cursor-node[focus=false] {
                 width: 3px !important;
@@ -63,13 +60,10 @@ exports.decorateConfig = config => {
         css: `
             ${config.css || ''}
             ::selection {
-                background: #9198A2 !important;
+                background: ${selectionColor} !important;
             }
             .notifications_view {
-                z-index: 200;
-            }
-            .notification_indicator {
-                border-radius: 3px;
+                display: none !important;
             }
             .header_header {
                 top: 0;
@@ -77,8 +71,12 @@ exports.decorateConfig = config => {
                 left: 0;
             }
             .tabs_list {
-                background-color: #292E38 !important;
+                background-color: #292E38;
                 border-bottom-color: #3E4756 !important;
+            }
+            .tab_first {
+                margin-left: -1px;
+                border: 0 !important;
             }
             .tab_tab {
                 color: #636A76;
@@ -97,32 +95,12 @@ exports.decorateConfig = config => {
             .tab_tab.tab_active::before {
                 border-bottom-color: ${backgroundColor};
             }
-            .tab_icon {
-                display: block;
-                top: 9px;
-                left: 9px;
-                width: 16px;
-                height: 16px;
-                border-radius: 2px;
-                background-image: url('${__dirname}/icons/close.svg');
-                background-repeat: no-repeat;
-                background-size: 9px;
-                background-position: center;
-                transform: scale(0);
-                transition: transform 150ms ease, background 150ms ease;
-            }
-            .tab_icon:hover {
-                background-color: #292E38;
-            }
-            .tab_tab.tab_active .tab_icon:hover {
-                background-color: #505765;
-            }
-            .tab_tab:hover .tab_icon {
-                transform: scale(1);
-            }
             .tab_tab.tab_hasActivity {
-                color: #EFAA8E;
+                color: ${activityColor};
                 animation: pulse 3s ease-in-out infinite;
+            }
+            .tab_tab.tab_hasActivity:hover {
+                animation: none;
             }
             @keyframes pulse {
                 0% {
@@ -138,82 +116,97 @@ exports.decorateConfig = config => {
                     opacity: 1;
                 }
             }
-            .tab_tab.tab_hasActivity:hover {
-                animation: none !important;
+            .tab_icon {
+                top: 9px;
+                left: 9px;
+                width: 16px;
+                height: 16px;
+                border-radius: 2px;
+                transform: scale(0);
+                transition: transform 150ms ease, background 150ms ease;
             }
-            .tab_tab.tab_hasActivity .tab_icon
-            {
-                background-image: url('${__dirname}/icons/close_activity.svg') !important;
+            .tab_icon:hover {
+                background-color: #292E38;
             }
-            .tab_tab.tab_hasActivity .tab_icon:hover
-            {
-                background-color: #EFAA8E;
-                background-image: url('${__dirname}/icons/close.svg') !important;
+            .tab_tab:hover .tab_icon {
+                transform: scale(1);
             }
-            .tab_first {
-                margin-left: -1px;
-                border: 0 !important;
+            .tab_tab.tab_active .tab_icon:hover {
+                background-color: #505765;
+            }
+            .tab_icon::before {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background-color: #FFFFFF;
+                -webkit-mask-image: url('${__dirname}/icons/close.svg');
+                -webkit-mask-repeat: no-repeat;
+                -webkit-mask-size: 9px;
+                -webkit-mask-position: center;
+                transition: background 150ms ease;
+            }
+            .tab_tab.tab_hasActivity .tab_icon::before {
+                background-color: ${activityColor};
+            }
+            .tab_tab.tab_hasActivity .tab_icon:hover {
+                background-color: ${activityColor};
+            }
+            .tab_tab.tab_hasActivity .tab_icon:hover::before {
+                background-color: #FFFFFF;
             }
             .tab_textInner {
                 padding: 0 32px;
             }
             .tab_service {
                 max-width: 100%;
+                position: relative;
                 display: inline-block;
-                background-repeat: no-repeat;
-                background-position: left center;
-                transition: background-image 150ms ease;
                 white-space: nowrap;
+                padding: 0 6px 0 20px;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                transition: background-image 150ms ease;
             }
-            .tab_service.gulp {
-                padding-left: 16px;
-                background-image: url('${__dirname}/icons/gulp.svg');
-                background-size: 6px 14px;
+            .tab_service::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                width: 14px;
+                height: 100%;
+                background-color: #636A76;
+                -webkit-mask-repeat: no-repeat;
+                -webkit-mask-position: left center;
+                transition: background 150ms ease;
             }
-            .tab_tab.tab_active .tab_service.gulp, .tab_tab:hover .tab_service.gulp, .tab_service.gulp.title {
-                background-image: url('${__dirname}/icons/gulp_active.svg');
+            .tab_service.tab_shell::before {
+                left: 5px;
+                -webkit-mask-image: url('${__dirname}/icons/shell.svg');
+                -webkit-mask-size: 8px 14px;
             }
-            .tab_tab.tab_hasActivity .tab_service.gulp {
-                background-image: url('${__dirname}/icons/gulp_activity.svg');
+            .tab_service.tab_gulp::before {
+                left: 6px;
+                -webkit-mask-image: url('${__dirname}/icons/gulp.svg');
+                -webkit-mask-size: 6px 14px;
             }
-            .tab_service.zsh {
-                padding-left: 16px;
-                background-image: url('${__dirname}/icons/bolt.svg');
-                background-size: 8px 14px;
+            .tab_service.tab_php::before {
+                -webkit-mask-image: url('${__dirname}/icons/php.svg');
+                -webkit-mask-size: 14px 10px;
             }
-            .tab_tab.tab_active .tab_service.zsh, .tab_tab:hover .tab_service.zsh, .tab_service.zsh.title {
-                background-image: url('${__dirname}/icons/bolt_active.svg');
+            .tab_service.tab_node::before {
+                -webkit-mask-image: url('${__dirname}/icons/node.svg');
+                -webkit-mask-size: 14px 14px;
             }
-            .tab_tab.tab_hasActivity .tab_service.zsh {
-                background-image: url('${__dirname}/icons/bolt_activity.svg');
+            .tab_service.tab_title::before, .tab_tab.tab_active .tab_service::before, .tab_tab:hover .tab_service::before {
+                background-color: #FFFFFF;
             }
-            .tab_service.node {
-                padding-left: 20px;
-                background-image: url('${__dirname}/icons/node.svg');
-                background-size: 14px 14px;
-            }
-            .tab_tab.tab_active .tab_service.node, .tab_tab:hover .tab_service.node, .tab_service.node.title {
-                background-image: url('${__dirname}/icons/node_active.svg');
-            }
-            .tab_tab.tab_hasActivity .tab_service.node {
-                background-image: url('${__dirname}/icons/node_activity.svg');
-            }
-            .tab_service.php {
-                padding-left: 20px;
-                background-image: url('${__dirname}/icons/php.svg');
-                background-size: 14px 10px;
-            }
-            .tab_tab.tab_active .tab_service.php, .tab_tab:hover .tab_service.php, .tab_service.php.title {
-                background-image: url('${__dirname}/icons/php_active.svg');
-            }
-            .tab_tab.tab_hasActivity .tab_service.php {
-                background-image: url('${__dirname}/icons/php_activity.svg');
+            .tab_tab.tab_hasActivity .tab_service::before {
+                background-color: ${activityColor};
             }
             .terms_terms {
                 padding: 12px 14px 42px !important;
             }
+
             .footer_footer {
                 display: flex;
                 justify-content: space-between;
@@ -223,13 +216,13 @@ exports.decorateConfig = config => {
                 right: 0;
                 z-index: 100;
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-                font-size: 12px;
+                font-size: ${fontSize}px;
                 height: 30px;
                 padding: 0 14px 1px;
                 background-color: #343D4B;
-                opacity: 0.4;
+                opacity: 0.45;
                 cursor: default;
-                -webkit-user-select: none !important;
+                -webkit-user-select: none;
                 transition: opacity 250ms ease;
             }
             .footer_footer:hover {
@@ -246,7 +239,7 @@ exports.decorateConfig = config => {
                 opacity: 0;
                 pointer-events: none;
             }
-            .item_folder, .item_active {
+            .item_active {
                 opacity: 1;
                 pointer-events: auto;
             }
@@ -261,154 +254,198 @@ exports.decorateConfig = config => {
             }
             .item_branch {
                 padding-left: 30px;
-                background-image: url('${__dirname}/icons/git-branch.svg');
+                background-image: url('${__dirname}/icons/branch.svg');
                 background-size: 9px 12px;
                 background-position: 14px center;
             }
         `
-    })
-}
+    });
+};
 
+// Hide traffic buttons
+exports.decorateBrowserOptions = defaults => {
+    const clean = Object.assign({ frame: false }, defaults);
+    delete clean.titleBarStyle;
+    return clean;
+};
+
+// Current shell service
+const getService = (title) => {
+    const service = (title.split(' ')[0] === 'gulp' || title.split(' ')[0] === 'php' || title.split(' ')[0] === 'node') ? title : 'shell';
+    return service;
+};
+
+// Tab icons
 exports.decorateTab = (Tab, { React }) => {
     return class extends Tab {
         render() {
-            this.props.text = React.createElement('span', { className: `tab_service ${this.props.text.split(' ')[0]}` }, `${this.props.text}`)
-            return React.createElement(Tab, Object.assign({}, this.props, {}))
-        }
-    }
-}
-
+            const icon = getService(this.props.text);
+            this.props.text = React.createElement('span', { className: `tab_service tab_${icon}` }, this.props.text);
+            return React.createElement(Tab, Object.assign({}, this.props, {}));
+        };
+    };
+};
 exports.decorateTabs = (Tabs, { React }) => {
     return class extends Tabs {
         render() {
             if (this.props.tabs.length === 1 && typeof this.props.tabs[0].title === 'string') {
-                this.props.tabs[0].title = React.createElement('span', { className: `tab_service title ${this.props.tabs[0].title.split(' ')[0]}` }, `${this.props.tabs[0].title}`)
+                const icon = getService(this.props.tabs[0].title);
+                this.props.tabs[0].title = React.createElement('span', { className: `tab_service tab_title tab_${icon}` }, this.props.tabs[0].title);
             }
-            return React.createElement(Tabs, Object.assign({}, this.props, {}))
-        }
-    }
-}
+            return React.createElement(Tabs, Object.assign({}, this.props, {}));
+        };
+    };
+};
 
-exports.decorateTerm = (Term, {React, notify}) => {
+const busy_timeout = 700;
+const busy_throttle = busy_timeout / 2;
+
+// Moving state on cursor
+exports.decorateTerm = (Term, { React }) => {
     return class extends React.Component {
-        constructor (props, context) {
-            super(props, context)
-            this._onTerminal = this._onTerminal.bind(this)
-            this._onCursorChange = this._onCursorChange.bind(this)
-            this._updateCursorStatus = this._updateCursorStatus.bind(this)
-            this._markBusyThrottled = throttle(this._markBusy.bind(this), BUSY_THROTTLE)
-            this._markIdle = this._markIdle.bind(this)
+        constructor (props) {
+            super(props);
+            this._onTerminal = this._onTerminal.bind(this);
+            this._onCursorChange = this._onCursorChange.bind(this);
+            this._updateCursorStatus = this._updateCursorStatus.bind(this);
+            this._markBusyThrottled = throttle(this._markBusy.bind(this), busy_throttle);
+            this._markIdle = this._markIdle.bind(this);
         }
 
         _onTerminal (term) {
-            if (this.props.onTerminal) this.props.onTerminal(term)
+            if (this.props.onTerminal) this.props.onTerminal(term);
 
-            this._cursor = term.cursorNode_
+            this._cursor = term.cursorNode_;
 
-            this._observer = new MutationObserver(this._onCursorChange)
+            this._observer = new MutationObserver(this._onCursorChange);
             this._observer.observe(this._cursor, {
                 attributes: true,
                 childList: false,
                 characterData: false
-            })
-        }
+            });
+        };
 
         _onCursorChange (mutations) {
-            const cursorMoved = mutations.some(m => m.attributeName === 'title')
+            const cursorMoved = mutations.some(m => m.attributeName === 'title');
             if (cursorMoved) {
-                this._updateCursorStatus()
+                this._updateCursorStatus();
             }
-        }
+        };
 
         _updateCursorStatus () {
-            this._markBusyThrottled()
+            this._markBusyThrottled();
 
-            clearTimeout(this._markingTimer)
+            clearTimeout(this._markingTimer);
             this._markingTimer = setTimeout(() => {
                 this._markIdle()
-            }, BUSY_TIMEOUT)
-        }
+            }, busy_timeout);
+        };
 
         _markBusy () {
             this._cursor.setAttribute('moving', true)
-        }
+        };
 
         _markIdle () {
             this._cursor.removeAttribute('moving')
-        }
+        };
 
         render () {
             return React.createElement(Term, Object.assign({}, this.props, {
                 onTerminal: this._onTerminal
-            }))
-        }
+            }));
+        };
 
         componentWillUnmount () {
             if (this._observer) {
                 this._observer.disconnect()
             }
-        }
-    }
-}
+        };
+    };
+};
 
-let shell_cwd
-let git_branch = ''
+let curPid;
+let curCwd;
+let curBranch;
+let uids = {};
 
+// Current shell cwd
+const setCwd = (pid) =>
+    exec(`lsof -p ${pid} | grep cwd | tr -s ' ' | cut -d ' ' -f9-`, (err, cwd) => {
+        cwd = cwd.trim();
+        curCwd = cwd;
+
+        store.dispatch({
+            type: 'SESSION_SET_CWD',
+            cwd
+        });
+});
+
+// Current git branch
 const setBranch = (actionCwd) => {
     exec(`git rev-parse --abbrev-ref HEAD`, { cwd: actionCwd }, (err, branch) => {
-        git_branch = branch
+        curBranch = branch;
     })
-}
+};
 
+// Status line
 exports.decorateHyperTerm = (HyperTerm, { React }) => {
     return class extends React.Component {
         constructor(props) {
-            super(props)
-            this.state = ({
-                folder: shell_cwd,
-                branch: git_branch
-            })
+            super(props);
+            this.state = {
+                folder: curCwd,
+                branch: curBranch
+            };
             this.handleClick = this.handleClick.bind(this);
-
-            setInterval(() => this.getFolder(), 100)
-            setInterval(() => this.getBranch(), 100)
-        }
-        handleClick () {
-            shell.openExternal('file://'+shell_cwd)
-        }
-        getFolder() {
-            const folder = shell_cwd
-            this.setState({folder})
-
-            return folder
-        }
-        getBranch() {
-            const branch = git_branch
-            this.setState({branch})
-
-            return branch
-        }
+        };
+        handleClick() {
+            shell.openExternal('file://'+this.state.folder);
+        };
         render() {
-            const activeState = this.state.branch !== '' ? ' item_active' : ''
+            const hasBranch = this.state.branch !== '' ? ' item_active' : '';
 
             return (
                 React.createElement(HyperTerm, Object.assign({}, this.props, {
                     customChildren: React.createElement('footer', { className: 'footer_footer' },
-                        React.createElement('div', { className: 'item_item item_folder', onClick: this.handleClick }, this.state.folder),
-                        React.createElement('div', { className: 'item_item item_branch'+activeState }, this.state.branch)
-                    ),
+                        React.createElement('div', { className: 'item_item item_folder item_active', onClick: this.handleClick }, this.state.folder),
+                        React.createElement('div', { className: `item_item item_branch ${hasBranch}` },  this.state.branch)
+                    )
                 }))
-            )
-        }
-    }
-}
+            );
+        };
+        componentDidMount() {
+            setInterval(() => this.setState({
+                folder: curCwd,
+                branch: curBranch
+            }), 100);
+        };
+    };
+};
 
+// Sessions
 exports.middleware = (store) => (next) => (action) => {
     switch (action.type) {
+        case 'SESSION_PTY_DATA':
+            if (curPid && uids[action.uid] === curPid) setCwd(curPid);
+            break;
+        case 'SESSION_ADD':
+            uids[action.uid] = action.pid;
+            curPid = action.pid;
+            setCwd(curPid);
+            break;
         case 'SESSION_SET_CWD':
-            shell_cwd = action.cwd
-            setBranch(action.cwd)
-        break;
+            setBranch(curCwd);
+            break;
+        case 'SESSION_SET_ACTIVE':
+            curPid = uids[action.uid];
+            setCwd(curPid);
+            break;
+        case 'SESSION_PTY_EXIT':
+            delete uids[action.uid];
+            break;
+        case 'SESSION_USER_EXIT':
+            delete uids[action.uid];
+            break;
     }
     next(action);
 };
