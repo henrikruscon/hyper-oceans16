@@ -1,4 +1,4 @@
-# hyperterm-base16-ocean-saturated
+# hyperterm-base16-ocean-saturated [![npm](https://img.shields.io/npm/v/hyperterm-base16-ocean-saturated.svg?maxAge=2592000?style=flat-square)](https://www.npmjs.com/package/hyperterm-base16-ocean-saturated) [![npm](https://img.shields.io/npm/dt/hyperterm-base16-ocean-saturated.svg?maxAge=2592000?style=flat-square)](https://www.npmjs.com/package/hyperterm-base16-ocean-saturated)
 
 > Saturated Base 16 Ocean Theme for [HyperTerm](https://hyperterm.org) based on [Base 16 Ocean](https://github.com/dunovank/oceans16-syntax) scheme.
 
