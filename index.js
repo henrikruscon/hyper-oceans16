@@ -156,7 +156,7 @@ exports.decorateConfig = config => {
                 background-color: #FFFFFF;
             }
             .tab_textInner {
-                padding: 0 32px;
+                padding: 0 30px;
             }
             .tab_service {
                 max-width: 100%;
@@ -206,7 +206,6 @@ exports.decorateConfig = config => {
             .terms_terms {
                 padding: 12px 14px 42px !important;
             }
-
             .footer_footer {
                 display: flex;
                 justify-content: space-between;
