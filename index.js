@@ -8,8 +8,6 @@ const backgroundColor = '#303845';
 const foregroundColor = '#D0D4E6';
 const cursorColor = '#2C85F7';
 const borderColor = backgroundColor;
-const selectionColor = '#9198A2';
-const activityColor = '#EFAA8E';
 const fontSize = 12;
 const colors = {
     black           : backgroundColor,
@@ -43,7 +41,10 @@ exports.decorateConfig = config => {
         termCSS: `
             ${config.termCSS || ''}
             ::selection {
-                background: ${selectionColor} !important;
+                background: #9198A2 !important;
+            }
+            .cursor-node {
+                background-color: transparent !important;
             }
             .cursor-node[focus=false] {
                 width: 3px !important;
@@ -56,11 +57,14 @@ exports.decorateConfig = config => {
                     opacity: 0;
                 }
             }
+            span {
+                font-weight: normal !important;
+            }
         `,
         css: `
             ${config.css || ''}
             ::selection {
-                background: ${selectionColor} !important;
+                background: #9198A2 !important;
             }
             .notifications_view {
                 display: none !important;
@@ -96,7 +100,7 @@ exports.decorateConfig = config => {
                 border-bottom-color: ${backgroundColor};
             }
             .tab_tab.tab_hasActivity {
-                color: ${activityColor};
+                color: #7BC6C0;
                 animation: pulse 3s ease-in-out infinite;
             }
             .tab_tab.tab_hasActivity:hover {
@@ -147,10 +151,10 @@ exports.decorateConfig = config => {
                 transition: background 150ms ease;
             }
             .tab_tab.tab_hasActivity .tab_icon::before {
-                background-color: ${activityColor};
+                background-color: #7BC6C0;
             }
             .tab_tab.tab_hasActivity .tab_icon:hover {
-                background-color: ${activityColor};
+                background-color: #7BC6C0;
             }
             .tab_tab.tab_hasActivity .tab_icon:hover::before {
                 background-color: #FFFFFF;
@@ -197,11 +201,16 @@ exports.decorateConfig = config => {
                 -webkit-mask-image: url('${__dirname}/icons/node.svg');
                 -webkit-mask-size: 14px 14px;
             }
-            .tab_service.tab_title::before, .tab_tab.tab_active .tab_service::before, .tab_tab:hover .tab_service::before {
+            .tab_service.tab_vim::before {
+                left: 2px;
+                -webkit-mask-image: url('${__dirname}/icons/vim.svg');
+                -webkit-mask-size: 12px 11px;
+            }
+            .tabs_title .tab_service::before, .tab_tab.tab_active .tab_service::before, .tab_tab:hover .tab_service::before {
                 background-color: #FFFFFF;
             }
             .tab_tab.tab_hasActivity .tab_service::before {
-                background-color: ${activityColor};
+                background-color: #7BC6C0;
             }
             .terms_terms {
                 padding: 12px 14px 42px !important;
@@ -270,7 +279,7 @@ exports.decorateBrowserOptions = defaults => {
 
 // Current shell service
 const getService = (title) => {
-    const service = (title.split(' ')[0] === 'gulp' || title.split(' ')[0] === 'php' || title.split(' ')[0] === 'node') ? title : 'shell';
+    const service = (title.split(' ')[0] === 'gulp' || title.split(' ')[0] === 'php' || title.split(' ')[0] === 'node' || title.split(' ')[0] === 'vim') ? title : 'shell';
     return service;
 };
 
@@ -289,7 +298,7 @@ exports.decorateTabs = (Tabs, { React }) => {
         render() {
             if (this.props.tabs.length === 1 && typeof this.props.tabs[0].title === 'string') {
                 const icon = getService(this.props.tabs[0].title);
-                this.props.tabs[0].title = React.createElement('span', { className: `tab_service tab_title tab_${icon}` }, this.props.tabs[0].title);
+                this.props.tabs[0].title = React.createElement('span', { className: `tab_service tab_${icon}` }, this.props.tabs[0].title);
             }
             return React.createElement(Tabs, Object.assign({}, this.props, {}));
         };
