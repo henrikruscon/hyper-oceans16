@@ -1,6 +1,6 @@
 # hyperterm-base16-ocean-saturated [![npm](https://img.shields.io/npm/v/hyperterm-base16-ocean-saturated.svg?maxAge=86400?style=flat-square)](https://www.npmjs.com/package/hyperterm-base16-ocean-saturated)  [![npm](https://img.shields.io/npm/dt/hyperterm-base16-ocean-saturated.svg?maxAge=86400?style=flat-square)](https://www.npmjs.com/package/hyperterm-base16-ocean-saturated)
 
-> Saturated Base 16 Ocean Theme for [HyperTerm](https://hyperterm.org) based on [Base 16 Ocean](https://github.com/dunovank/oceans16-syntax) scheme.
+> Saturated Base 16 Ocean Theme for [Hyper](https://hyper.is) based on [Base 16 Ocean](https://github.com/dunovank/oceans16-syntax) scheme.
 
 ![](screen.png)
 
@@ -9,7 +9,7 @@
 
 ## Install
 
-Add `hyperterm-base16-ocean-saturated` to the plugins array in your `~/.hyperterm.js` config file and full reload.
+Add `hyperterm-base16-ocean-saturated` to the plugins array in your `~/.hyper.js` config file and full reload.
 
 
 ## Additional
