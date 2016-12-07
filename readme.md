@@ -22,7 +22,6 @@ To look exactly like the screens, you also need [Pure](https://github.com/sindre
 ## Other
 
 * [hyperterm-chesterish](https://github.com/henrikdahl/hyperterm-chesterish)
-* [hyperterm-grade3](https://github.com/henrikdahl/hyperterm-grade3)
 
 
 ## License

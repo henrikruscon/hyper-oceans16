@@ -8,7 +8,6 @@ const backgroundColor = '#303845';
 const foregroundColor = '#D0D4E6';
 const cursorColor = '#2C85F7';
 const borderColor = backgroundColor;
-const fontSize = 12;
 const colors = {
     black           : backgroundColor,
     red             : '#E39194',
@@ -36,7 +35,6 @@ exports.decorateConfig = config => {
         borderColor,
         cursorColor,
         colors,
-        fontSize,
         cursorShape: 'BEAM',
         termCSS: `
             ${config.termCSS || ''}
@@ -74,17 +72,28 @@ exports.decorateConfig = config => {
                 right: 0;
                 left: 0;
             }
+            .tabs_borderShim {
+                display: none;
+            }
             .tabs_list {
-                background-color: #292E38;
-                border-bottom-color: #3E4756 !important;
+                margin-left: 0;
+                border-bottom: 1px solid #3E4756;
             }
             .tab_first {
-                margin-left: -1px;
-                border: 0 !important;
+                border-left-width: 0px !important;
+                padding-left: 1px;
             }
             .tab_tab {
                 color: #636A76;
+                border-right-width: 1px;
+                border-right-style: solid;
+                border-color: transparent !important;
+                background-color: #292E38;
                 transition: background 150ms ease;
+            }
+            .tab_tab:last-child, .tab_tab.tab_active:last-child {
+                border-right-width: 0 !important;
+                padding-right: 1px;
             }
             .tab_tab:hover {
                 color: #FFFFFF;
@@ -92,33 +101,17 @@ exports.decorateConfig = config => {
             }
             .tab_tab.tab_active {
                 color: #FFFFFF;
-                font-weight: 400;
-                background-color: ${backgroundColor};
                 border-color: #3E4756 !important;
+                background-color: transparent;
+
             }
             .tab_tab.tab_active::before {
-                border-bottom-color: ${backgroundColor};
-            }
-            .tab_tab.tab_hasActivity {
-                color: #7BC6C0;
-                animation: pulse 3s ease-in-out infinite;
-            }
-            .tab_tab.tab_hasActivity:hover {
-                animation: none;
-            }
-            @keyframes pulse {
-                0% {
-                    opacity: 1;
-                }
-                50% {
-                    opacity: 1;
-                }
-                75% {
-                    opacity: 0.5;
-                }
-	            100% {
-                    opacity: 1;
-                }
+                content: '';
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: -1px;
+                border-bottom: 1px solid ${backgroundColor};
             }
             .tab_icon {
                 top: 9px;
@@ -149,6 +142,30 @@ exports.decorateConfig = config => {
                 -webkit-mask-size: 9px;
                 -webkit-mask-position: center;
                 transition: background 150ms ease;
+            }
+            .tab_shape {
+                display: none;
+            }
+            .tab_tab.tab_hasActivity .tab_text {
+                color: #7BC6C0;
+                animation: pulse 3s ease-in-out infinite;
+            }
+            .tab_tab.tab_hasActivity:hover .tab_text {
+                animation: none;
+            }
+            @keyframes pulse {
+                0% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 1;
+                }
+                75% {
+                    opacity: 0.5;
+                }
+	            100% {
+                    opacity: 1;
+                }
             }
             .tab_tab.tab_hasActivity .tab_icon::before {
                 background-color: #7BC6C0;
@@ -211,60 +228,6 @@ exports.decorateConfig = config => {
             }
             .tab_tab.tab_hasActivity .tab_service::before {
                 background-color: #7BC6C0;
-            }
-            .terms_terms {
-                padding: 12px 14px 42px !important;
-            }
-            .footer_footer {
-                display: flex;
-                justify-content: space-between;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                z-index: 100;
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-                font-size: ${fontSize}px;
-                height: 30px;
-                padding: 0 14px 1px;
-                background-color: #343D4B;
-                opacity: 0.45;
-                cursor: default;
-                -webkit-user-select: none;
-                transition: opacity 250ms ease;
-            }
-            .footer_footer:hover {
-                opacity: 1;
-            }
-            .item_item {
-                display: flex;
-                align-items: center;
-                color: #A4A8B2;
-                background-repeat: no-repeat;
-                background-position: left center;
-                white-space: nowrap;
-                overflow: hidden;
-                opacity: 0;
-                pointer-events: none;
-            }
-            .item_active {
-                opacity: 1;
-                pointer-events: auto;
-            }
-            .item_folder {
-                padding-left: 21px;
-                background-image: url('${__dirname}/icons/folder.svg');
-                background-size: 14px 12px;
-                cursor: pointer;
-            }
-            .item_folder:hover {
-                text-decoration: underline;
-            }
-            .item_branch {
-                padding-left: 30px;
-                background-image: url('${__dirname}/icons/branch.svg');
-                background-size: 9px 12px;
-                background-position: 14px center;
             }
         `
     });
@@ -373,7 +336,6 @@ exports.decorateTerm = (Term, { React }) => {
 
 let curPid;
 let curCwd;
-let curBranch;
 let uids = {};
 
 // Current shell cwd
@@ -388,48 +350,6 @@ const setCwd = (pid) =>
         });
 });
 
-// Current git branch
-const setBranch = (actionCwd) => {
-    exec(`git rev-parse --abbrev-ref HEAD`, { cwd: actionCwd }, (err, branch) => {
-        curBranch = branch;
-    })
-};
-
-// Status line
-exports.decorateHyperTerm = (HyperTerm, { React }) => {
-    return class extends React.Component {
-        constructor(props) {
-            super(props);
-            this.state = {
-                folder: curCwd,
-                branch: curBranch
-            };
-            this.handleClick = this.handleClick.bind(this);
-        };
-        handleClick() {
-            shell.openExternal('file://'+this.state.folder);
-        };
-        render() {
-            const hasBranch = this.state.branch !== '' ? ' item_active' : '';
-
-            return (
-                React.createElement(HyperTerm, Object.assign({}, this.props, {
-                    customChildren: React.createElement('footer', { className: 'footer_footer' },
-                        React.createElement('div', { className: 'item_item item_folder item_active', onClick: this.handleClick }, this.state.folder),
-                        React.createElement('div', { className: `item_item item_branch ${hasBranch}` },  this.state.branch)
-                    )
-                }))
-            );
-        };
-        componentDidMount() {
-            setInterval(() => this.setState({
-                folder: curCwd,
-                branch: curBranch
-            }), 100);
-        };
-    };
-};
-
 // Sessions
 exports.middleware = (store) => (next) => (action) => {
     switch (action.type) {
@@ -440,9 +360,6 @@ exports.middleware = (store) => (next) => (action) => {
             uids[action.uid] = action.pid;
             curPid = action.pid;
             setCwd(curPid);
-            break;
-        case 'SESSION_SET_CWD':
-            setBranch(curCwd);
             break;
         case 'SESSION_SET_ACTIVE':
             curPid = uids[action.uid];
