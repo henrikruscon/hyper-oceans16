@@ -16,12 +16,13 @@ Add `hyperterm-base16-ocean-saturated` to the plugins array in your `~/.hyper.js
 
 <p><a href="/screen_icon.png" target="_blank"><img src="/screen_icon.png" height="128" alt="" style="max-width:100%;"></a></p>
 
-To look exactly like the screens, you also need [Pure](https://github.com/sindresorhus/pure), [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting), [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) and [Fira Code](https://github.com/tonsky/FiraCode).
+To look exactly like the screens, you also need [Pure](https://github.com/sindresorhus/pure), [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting), [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions), [hyper-statusline](https://github.com/henrikdahl/hyper-statusline) and [Fira Code](https://github.com/tonsky/FiraCode).
 
 
 ## Other
 
 * [hyperterm-chesterish](https://github.com/henrikdahl/hyperterm-chesterish)
+* [hyper-statusline](https://github.com/henrikdahl/hyper-statusline)
 
 
 ## License
