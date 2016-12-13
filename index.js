@@ -147,7 +147,7 @@ exports.decorateConfig = config => {
                 display: none;
             }
             .tab_tab.tab_hasActivity .tab_text {
-                color: #7BC6C0;
+                color: #FFB68E;
                 animation: pulse 3s ease-in-out infinite;
             }
             .tab_tab.tab_hasActivity:hover .tab_text {
@@ -168,10 +168,10 @@ exports.decorateConfig = config => {
                 }
             }
             .tab_tab.tab_hasActivity .tab_icon::before {
-                background-color: #7BC6C0;
+                background-color: #FFB68E;
             }
             .tab_tab.tab_hasActivity .tab_icon:hover {
-                background-color: #7BC6C0;
+                background-color: #FFB68E;
             }
             .tab_tab.tab_hasActivity .tab_icon:hover::before {
                 background-color: #FFFFFF;
@@ -227,7 +227,7 @@ exports.decorateConfig = config => {
                 background-color: #FFFFFF;
             }
             .tab_tab.tab_hasActivity .tab_service::before {
-                background-color: #7BC6C0;
+                background-color: #FFB68E;
             }
         `
     });
