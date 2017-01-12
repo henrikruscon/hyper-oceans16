@@ -2,8 +2,8 @@
 
 > Oceans16 Theme for [Hyper](https://hyper.is) based on [Jupyter](https://github.com/dunovank/jupyter-themes) schemes.
 
-![](screen.png)
-![](screen_tabs.png)
+![hyper-oceans16](https://cloud.githubusercontent.com/assets/1430576/21888655/841942bc-d8c5-11e6-89aa-6da87f895a03.png)
+![hyper-oceans16-tabs](https://cloud.githubusercontent.com/assets/1430576/21888658/8674d9ea-d8c5-11e6-903f-14a128be086c.png)
 
 
 ## Install
