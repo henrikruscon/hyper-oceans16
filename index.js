@@ -2,7 +2,7 @@
 const backgroundColor   = '#303845';
 const foregroundColor   = '#D0D4E6';
 const cursorColor       = '#2C85F7';
-const borderColor       = '#3E4756';
+const borderColor       = '#343D4C';
 const colors            = {
       black             : backgroundColor,
       red               : '#E39194',
@@ -40,12 +40,6 @@ exports.decorateConfig = config => {
             }
             x-screen x-row {
                 font-variant-ligatures: initial;
-            }
-            .cursor-node[focus=true]:not([hyper-blink-moving]) {
-                animation: blink 1s ease infinite;
-            }
-            @keyframes blink {
-                50% { opacity: 0 }
             }
             span {
                 font-weight: normal !important;
