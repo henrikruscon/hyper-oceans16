@@ -20,6 +20,7 @@ Add `hyper-oceans16` to the plugins array in your `~/.hyper.js` config.
 ## Other
 
 * [hyper-chesterish](https://github.com/henrikdahl/hyper-chesterish)
+* [hyper-aurora](https://github.com/henrikdahl/hyper-aurora)
 
 
 ## License
