@@ -2,7 +2,7 @@
 const backgroundColor   = '#303845';
 const foregroundColor   = '#D0D4E6';
 const cursorColor       = '#2C85F7';
-const borderColor       = '#343D4C';
+const borderColor       = '#394251';
 const colors            = {
       black             : backgroundColor,
       red               : '#E39194',
